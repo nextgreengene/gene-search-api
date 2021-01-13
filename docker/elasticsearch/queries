@@ -1,0 +1,91 @@
+GET /_cat/indices
+
+GET _search
+{
+  "query": {
+    "match_all": {}
+  }
+}
+
+
+PUT seed/_doc/1
+{
+  "id": "mock.id.1",
+  "name": "martin"
+}
+
+GET index/_doc/1
+GET posts/_doc/1
+DELETE /index
+
+PUT seed/_doc/3
+{
+    "name": "Super Mall",
+    "email": "your.mall@gmail.com",
+    "description": "shopping center where you will find awesome gifts for the party, practical tools for the home fixer, nice interior details you missed, the good dinner food or good rubber boots for the children. Our popular shopping center houses pharmacies, food, fashion, leisure, houses and homes under one roof.",
+    "phone": "8784562",    
+    "address": {
+        "country": "SE",
+        "city": "Stockholm",
+        "street_address": "Lagom 21",
+        "postal_code": "WL5 1JX"        
+    },    
+    "score": 0.2,
+    "type": "physical",    
+    "industry": "shopping",
+    "co2_type": null,
+    "co2_monthly": null,
+    "country_co2_montlhy_share": 300
+}
+
+PUT ge/seed/1
+{
+  "id": "mock.id.1",
+  "name": "martin"
+}
+
+GET seed/_doc/2
+GET posts/_doc/1
+DELETE /ge
+
+GET /_cat/indices
+
+
+GET seed/_search
+{
+  "query": {
+    "fuzzy": {
+      "name": {
+        "value": "Super",
+        "fuzziness": "AUTO",
+        "max_expansions": 500,
+        "prefix_length": 0,
+        "transpositions": true,
+        "rewrite": "constant_score"
+      }
+    }
+  }
+}
+
+
+
+GET /seed/_search
+{
+  "query": {
+    "function_score": {
+      "query": {
+        "fuzzy": {
+          "name": {
+            "value": "super"
+          }
+        }
+      },
+      "field_value_factor": {
+        "field": "score",
+        "factor": 1.2,
+        "modifier": "sqrt",
+        "missing": 1
+      }
+    }
+  }
+}

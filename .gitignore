@@ -1,0 +1,52 @@
+### JetBrains IDEs:
+.idea
+*.iml
+*.ipr
+*.iws
+
+### Eclipse IDE:
+.settings/
+.classpath
+.project
+apitests/.settings/
+apitests/.classpath
+apitests/.project
+
+### Gradle
+build
+.gradle
+
+# Gradle GUI config
+gradle-app.setting
+
+### JIRA plugin
+atlassian-ide-plugin.xml
+
+### Mac OSX:
+.DS_Store
+
+### Generated binaries
+apitests/bin/
+
+### Others:
+target
+out
+logs
+*~
+classes
+/deployment
+mem.h2.db
+mem.trace.db
+checkout.log.json
+checkout.access.log.json
+.vagrant
+coverage/
+out
+/src/test/resources/dev/
+/src/main/resources/dev/
+
+### NetBeans IDE:
+/.nb-gradle/
+/nbproject/*
+/.nb-gradle-properties
+/private/
