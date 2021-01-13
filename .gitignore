@@ -37,8 +37,6 @@ classes
 /deployment
 mem.h2.db
 mem.trace.db
-checkout.log.json
-checkout.access.log.json
 .vagrant
 coverage/
 out
@@ -50,3 +48,6 @@ out
 /nbproject/*
 /.nb-gradle-properties
 /private/
+
+### ElasticSearch
+/docker/elasticsearch/data
