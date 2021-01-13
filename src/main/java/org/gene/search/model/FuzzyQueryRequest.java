@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import io.swagger.annotations.ApiModelProperty;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +35,20 @@ public class FuzzyQueryRequest implements SearchQueryRequest {
         JsonObject valueJson = new JsonObject().put("value", value);
         JsonObject fieldJson = new JsonObject().put(field, valueJson);
         JsonObject fuzzyJson = new JsonObject().put("fuzzy", fieldJson);
-        return new JsonObject().put("query", fuzzyJson);
+        JsonArray shouldArray = new JsonArray().add(fuzzyJson);
+        JsonObject shouldJson = new JsonObject().put("should", shouldArray);
+        JsonObject boolJson = new JsonObject().put("bool", shouldJson);
+        JsonObject functionScoreBoolQuery = new JsonObject().put("query", boolJson)
+                                                            .put("field_value_factor", getFieldValueFactor());
+        JsonObject functionScoreJson = new JsonObject().put("function_score", functionScoreBoolQuery);
+        return new JsonObject().put("query", functionScoreJson);
+    }
+
+    private JsonObject getFieldValueFactor() {
+        return new JsonObject().put("field", "score")
+                               .put("factor", 1.2)
+                               .put("modifier", "sqrt")
+                               .put("missing", 1);
     }
 
 }

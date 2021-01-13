@@ -1,3 +1,13 @@
+elasticdump \
+  --input=http://localhost:9200/seed \
+  --output=/Users/martin.dagostino/workspace/gene/gene-search-api/docker/elasticsearch/seed_index_mapping_dump.json \
+  --type=mapping
+elasticdump \
+  --input=http://localhost:9200/seed \
+  --output=/Users/martin.dagostino/workspace/gene/gene-search-api/docker/elasticsearch/seed_index_dump.json \
+  --type=data
+
+
 GET /_cat/indices
 
 GET _search
