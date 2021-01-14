@@ -2,7 +2,7 @@ package org.gene.search.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Seed {
+public class SeedResponse {
 
     public String name;
     public String email;

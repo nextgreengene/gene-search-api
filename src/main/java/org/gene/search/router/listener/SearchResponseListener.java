@@ -6,7 +6,7 @@ import io.vertx.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
-import org.gene.search.model.Seed;
+import org.gene.search.model.SeedResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,11 +29,11 @@ public class SearchResponseListener extends SeedResponseListener {
             String responseBody = EntityUtils.toString(response.getEntity());
             JsonObject json = new JsonObject(responseBody);
             JsonArray hits = json.getJsonObject("hits").getJsonArray("hits");
-            List<Seed> results = new ArrayList<>(hits.size());
+            List<SeedResponse> results = new ArrayList<>(hits.size());
             for (int i = 0; i < hits.size(); i++) {
                 JsonObject hit = hits.getJsonObject(i);
-                Seed seed = hit.getJsonObject("_source").mapTo(Seed.class);
-                results.add(seed);
+                SeedResponse seedResponse = hit.getJsonObject("_source").mapTo(SeedResponse.class);
+                results.add(seedResponse);
             }
             routingContext.response()
                           .putHeader(CONTENT_TYPE, APPLICATION_JSON)

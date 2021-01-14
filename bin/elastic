@@ -1,0 +1,26 @@
+#!/bin/bash
+set -e
+
+dump(){
+  local type=${1}
+  local input=${2}
+  local output=${3}
+
+  echo "type=$type"
+  echo "input=$input"
+  echo "output=$output"
+
+  rm -f $output
+
+  elasticdump \
+    --input=$input \
+    --output=$output \
+    --type=$type
+
+   echo "DUMP DONE!"
+}
+
+COMMAND=$1
+shift
+
+${COMMAND} "$@"

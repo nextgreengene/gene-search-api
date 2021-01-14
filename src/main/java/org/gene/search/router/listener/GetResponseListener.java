@@ -5,7 +5,7 @@ import io.vertx.ext.web.RoutingContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
-import org.gene.search.model.Seed;
+import org.gene.search.model.SeedResponse;
 
 import java.io.IOException;
 
@@ -25,11 +25,11 @@ public class GetResponseListener extends SeedResponseListener {
         try {
             String responseBody = EntityUtils.toString(response.getEntity());
             JsonObject json = new JsonObject(responseBody);
-            Seed seed = json.getJsonObject("_source").mapTo(Seed.class);
+            SeedResponse seedResponse = json.getJsonObject("_source").mapTo(SeedResponse.class);
             routingContext.response()
                           .putHeader(CONTENT_TYPE, APPLICATION_JSON)
                           .setStatusCode(200)
-                          .end(encode(seed));
+                          .end(encode(seedResponse));
         } catch (IOException e) {
             log.error("error on elastic response success", e);
         }

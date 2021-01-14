@@ -5,6 +5,12 @@ SHELL = /bin/sh
 -include .env .env.local .env.*.local
 
 # Defaults
+DUMP_OUTPUT_PATH=/Users/martin.dagostino/workspace/gene/gene-search-api/docker/elasticsearch/
+DUMP_MAPPING_FILENAME=seed_index_mapping_dump.json
+DUMP_INDEX_FILENAME=seed_index_dump.json
+DUMP_INPUT="http://localhost:9200/seed"
+DUMP_OUTPUT_MAPPING=${DUMP_OUTPUT_PATH}${DUMP_MAPPING_FILENAME}
+DUMP_OUTPUT_INDEX=${DUMP_OUTPUT_PATH}${DUMP_INDEX_FILENAME}
 BUILD_VERSION ?= SNAPSHOT
 IMAGE_NAME := ${DOCKER_REPO}/${SERVICE_NAME}:${BUILD_VERSION}
 IMAGE_NAME_LATEST := ${DOCKER_REPO}/${SERVICE_NAME}:latest
@@ -54,9 +60,10 @@ help:
 	@echo "  ** The following tasks receive an env parameter to determine the environment they are being executed in. Default env=${env}, possible env values: ${ALL_ENVS}:"
 	@echo "  docker.run.all                 - Run GSA service and all it's dependencies with docker-compose (default env=${env})"
 	@echo "  docker.run.dependencies        - Run only GSA dependencies with docker-compose (default env=${env})". Note that `build` might need to be executed prior.
-	@echo "  docker.run.gsa                - Build and run GSA container in detached mode. Recreate it if already running (default env=${env})"
-	@echo "  docker.run.gsa.debug          - Build and run GSA container in un-detached mode. Recreate it if already running (default env=${env})"
+	@echo "  docker.run.gsa                	- Build and run GSA container in detached mode. Recreate it if already running (default env=${env})"
+	@echo "  docker.run.gsa.debug          	- Build and run GSA container in un-detached mode. Recreate it if already running (default env=${env})"
 	@echo "  docker.stop                    - Stop and remove all running containers from this project using docker-compose down (default env=${env})"
+	@echo "  elastic.dump                   - Dump mapping and index data from ElasticSearch (for local)"
 	@echo ""
 	@echo "Project-level environment variables are set in .env file:"
 	@echo "  SERVICE_NAME=gene-search-api"
@@ -96,6 +103,18 @@ docker.run.all: d.compose.down
 	make d.compose.up gsa-instances=1
 	make docker.wait
 
+.PHONY: elastic.dump
+elastic.dump: e.dump.mapping
+	make e.dump.data
+
+.PHONY: e.dump.mapping
+e.dump.mapping:
+	./bin/elastic dump mapping ${DUMP_INPUT} ${DUMP_OUTPUT_MAPPING}
+
+.PHONY: e.dump.data
+e.dump.data:
+	./bin/elastic dump data ${DUMP_INPUT} ${DUMP_OUTPUT_INDEX}
+
 .PHONY: docker.run.dependencies
 docker.run.dependencies: d.compose.down
 	make d.compose.up gsa-instances=0
@@ -121,6 +140,7 @@ d.compose.down:
 	$(call DOCKER_COMPOSE) down -v || true
 	$(call DOCKER_COMPOSE) rm --force || true
 	docker rm "$(docker ps -a -q)" -f || true
+
 
 ### ------------------------
 ### Pipeline's utility tasks

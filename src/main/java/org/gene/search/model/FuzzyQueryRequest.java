@@ -20,35 +20,48 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_EMPTY;
 public class FuzzyQueryRequest implements SearchQueryRequest {
 
     @Valid
-    @ApiModelProperty(value = "Field to search", required = true)
-    public final String field;
-
-    @Valid
-    @ApiModelProperty(value = "Value to search", required = true)
-    public final String value;
+    @ApiModelProperty(value = "Text to search", required = true)
+    public final String text;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class FuzzyQueryRequestBuilder {
     }
 
     public JsonObject getQuery() {
-        JsonObject valueJson = new JsonObject().put("value", value);
-        JsonObject fieldJson = new JsonObject().put(field, valueJson);
-        JsonObject fuzzyJson = new JsonObject().put("fuzzy", fieldJson);
-        JsonArray shouldArray = new JsonArray().add(fuzzyJson);
-        JsonObject shouldJson = new JsonObject().put("should", shouldArray);
-        JsonObject boolJson = new JsonObject().put("bool", shouldJson);
-        JsonObject functionScoreBoolQuery = new JsonObject().put("query", boolJson)
-                                                            .put("field_value_factor", getFieldValueFactor());
-        JsonObject functionScoreJson = new JsonObject().put("function_score", functionScoreBoolQuery);
-        return new JsonObject().put("query", functionScoreJson);
+        return new JsonObject().put("query", getFunctionScoreQuery());
     }
 
-    private JsonObject getFieldValueFactor() {
+    private JsonObject getFunctionScoreQuery() {
+        JsonObject functionScoreBoolQuery = new JsonObject().put("query", getBoolQuery())
+                                                            .put("field_value_factor", getFieldValueFactorQuery());
+        return new JsonObject().put("function_score", functionScoreBoolQuery);
+    }
+
+    private JsonObject getFieldValueFactorQuery() {
         return new JsonObject().put("field", "score")
                                .put("factor", 1.2)
                                .put("modifier", "sqrt")
                                .put("missing", 1);
     }
+
+    private JsonObject getBoolQuery() {
+        JsonArray shouldArray = new JsonArray().add(getFuzzyNameQuery())
+                                               .add(getFuzzyDescriptionQuery());
+        JsonObject shouldJson = new JsonObject().put("should", shouldArray);
+        return new JsonObject().put("bool", shouldJson);
+    }
+
+    private JsonObject getFuzzyNameQuery() {
+        JsonObject valueNameJson = new JsonObject().put("value", text);
+        JsonObject fieldNameJson = new JsonObject().put("name", valueNameJson);
+        return new JsonObject().put("fuzzy", fieldNameJson);
+    }
+
+    private JsonObject getFuzzyDescriptionQuery() {
+        JsonObject valueDescriptionJson = new JsonObject().put("value", text);
+        JsonObject fieldDescriptionJson = new JsonObject().put("description", valueDescriptionJson);
+        return new JsonObject().put("fuzzy", fieldDescriptionJson);
+    }
+
 
 }

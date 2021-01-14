@@ -1,12 +1,3 @@
-elasticdump \
-  --input=http://localhost:9200/seed \
-  --output=/Users/martin.dagostino/workspace/gene/gene-search-api/docker/elasticsearch/seed_index_mapping_dump.json \
-  --type=mapping
-elasticdump \
-  --input=http://localhost:9200/seed \
-  --output=/Users/martin.dagostino/workspace/gene/gene-search-api/docker/elasticsearch/seed_index_dump.json \
-  --type=data
-
 
 GET /_cat/indices
 
@@ -18,7 +9,7 @@ GET _search
 }
 
 
-PUT seed/_doc/1
+PUT seedResponse/_doc/1
 {
   "id": "mock.id.1",
   "name": "martin"
@@ -28,7 +19,7 @@ GET index/_doc/1
 GET posts/_doc/1
 DELETE /index
 
-PUT seed/_doc/3
+PUT seedResponse/_doc/3
 {
     "name": "Super Mall",
     "email": "your.mall@gmail.com",
@@ -48,20 +39,20 @@ PUT seed/_doc/3
     "country_co2_montlhy_share": 300
 }
 
-PUT ge/seed/1
+PUT ge/seedResponse/1
 {
   "id": "mock.id.1",
   "name": "martin"
 }
 
-GET seed/_doc/2
+GET seedResponse/_doc/2
 GET posts/_doc/1
 DELETE /ge
 
 GET /_cat/indices
 
 
-GET seed/_search
+GET seedResponse/_search
 {
   "query": {
     "fuzzy": {
@@ -79,7 +70,7 @@ GET seed/_search
 
 
 
-GET /seed/_search
+GET /seedResponse/_search
 {
   "query": {
     "function_score": {
